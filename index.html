@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodorer</title>
+
+    <link rel="stylesheet" href="CSS/reset.css">
+    <link rel="stylesheet" href="CSS/pomodorer.css">
+    <script src="https://kit.fontawesome.com/c117fbda8a.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <header>
+        <div class="header_wrapper">
+            <h1 class="head_title">Pomodorer</h1>
+            <i id="menu" class="fa-solid fa-bars menu"></i>
+        </div>
+
+    </header>
+
+    <main>
+        <section id="clock" class="clock">
+           
+            <div id ="circle" class="circle">
+                <div id="circle_before" class="animation_left"></div>
+                <div class="clock_area">
+                    <div id="countdown" class="countdown">25:00</div>
+                    <div id="clock_timer" class="clock_timer"></div>
+                </div>
+                <div id="circle_after" class="animation_right"></div>
+            </div>
+            
+            
+            <div class="btn_area">
+                <button id="btn" class="btn"><i class="fa-solid fa-play"></i></button>
+            </div>
+
+        </section>
+
+        <section id="table" class="table_area">
+            <table id="list" class="list">
+                <tr class="headline">
+                    <th class="date sticky">日付</th>
+                    <th class="starttime sticky">開始時間</th>
+                    <th class="endtime sticky">終了時間</th>
+                    <th class="tag sticky">タイトル</th>
+                    <th class="save_change sticky">編集/削除</th>
+                    <th class="Key sticky" style="display: none;"></th>
+                </tr>
+                
+                
+                <!-- ここに追加データが挿入される -->
+            </table>
+
+
+        </section>
+
+    </main>
+
+    <footer>
+        <small></small>
+    </footer>
+
+    <!-- JQuery -->
+    <script src="JS/jquery-3.6.1.min.js"></script>
+    <!-- JQuery -->
+
+    <!--Firebase-->
+  
+    <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+    import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved, child, update }
+        from "https://cdnjs.cloudflare.com/ajax/libs/firebase/9.14.0/firebase-database.js";
+
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+    apiKey: "",
+    authDomain: "mil4-firebasedemo.firebaseapp.com",
+    projectId: "mil4-firebasedemo",
+    storageBucket: "mil4-firebasedemo.appspot.com",
+    messagingSenderId: "765874021341",
+    appId: "1:765874021341:web:5a92e4168ea06e407a4c34"
+    };
+
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app); //
+    const dbRef = ref(db, "pomodorer"); // RealTime DB内のchatを使う
+    const idpassRef = ref(db, "id-pass");
+
+    // ---------時計表示機能--------------------//
+        function showClock(){
+            const nowTime = new Date();
+            const nowHour = nowTime.getHours().toString().padStart(2, '0');
+            const nowMin = nowTime.getMinutes().toString().padStart(2, '0');
+            const nowSec = nowTime.getSeconds().toString().padStart(2, '0');
+            let clock = `${nowHour}:${nowMin}:${nowSec}`
+            $('#clock_timer').html(clock);
+        }
+
+        setInterval(showClock,1000)
+    // ---------時計表示機能--------------------//
+    // ---------カウントダウン/レコード保存機能--------------------//
+        let time = 1500;
+        let modeCount = 1;
+        let start_stop = '';
+        let timerID;
+
+        function pomoCountdown(){ 
+
+            if(time > 0){
+
+                let min = Math.floor(time/60) % 60;
+                let sec =  Math.floor(time) % 60;
+
+                min<10 ?  min = '0' + min : min = min;
+                sec<10 ?  sec = '0' + sec : sec = sec ;
+                    
+                $('#countdown').text(`${min}:${sec}`);
+
+                time--;
+
+            }else if(time == 0){
+
+                $('#countdown').text("00:00");
+                time --;
+
+                $('#circle_before').removeClass('animation_left');
+                $('#circle_after').removeClass('animation_right');
+
+
+            }else if(time < 0){
+                if(modeCount == 7){
+                    time = 900;
+                    modeCount = 0
+
+                }else{
+                    if(modeCount % 2 != 0 ){
+                        const now = new Date();
+                        let st = '';
+                        let sh = '';
+                        let sm = ''
+                        let h = now.getHours();
+                        let m = now.getMinutes();
+                        
+                        if(m >= 25){
+
+                            (h < 10) ? sh = '0'+ h : sh = h;
+                            (m-25 < 10) ? sm = '0'+ (m-25) : sm = m;
+
+                            st = `${sh}:${sm}`
+
+                        }else{
+
+                            (h- 1 < 10) ? sh = '0'+ (h-1) : sh = h-1;
+                            ((60 + m - 25) < 10) ? sm = '0' + (60 + m - 25) : sm = 60 + m - 25;
+
+
+                            st = `${sh}:${sm}`;
+                        }
+
+                        (h < 10) ? h = '0'+ h : h = h;
+                        (m < 10) ? m = '0'+ m : m = m;
+                        
+                        const record = {
+                            user : 'test',
+                            date : `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`,
+                            startTime : st,
+                            endTime : `${h}:${m}`,
+                            Title : '',
+                        }
+
+                        const newPostRef = push(dbRef);
+                        set(newPostRef, record);    
+
+                        time = 300;
+                        modeCount ++;
+
+                    }else{
+
+                        time = 1500;
+                        modeCount ++;
+                        
+                    }                
+                }
+
+                $('#circle_before').css('animation-duration',`${time}s`);
+                $('#circle_after').css('animation-duration',`${time}s`);
+                $('#circle_before').addClass('animation_left');
+                $('#circle_after').addClass('animation_right');
+            }   
+        }
+        $('#btn').on('click', function(){
+
+            if(start_stop == ''){
+
+                timerID = setInterval(pomoCountdown,1000);
+                $('#btn').html('<i class="fa-solid fa-pause"></i>')
+                start_stop = 'stop'
+                $('#circle_before').css('animation-play-state','running')
+                $('#circle_after').css('animation-play-state','running')
+
+            }else if(start_stop == 'stop'){
+
+                clearInterval(timerID);
+                $('#btn').html('<i class="fa-solid fa-play"></i>')
+                start_stop = 'start'
+                $('#circle_before').css('animation-play-state','paused')
+                $('#circle_after').css('animation-play-state','paused')
+
+            }else if(start_stop == 'start'){
+
+                timerID = setInterval(pomoCountdown,1000);
+                $('#btn').html('<i class="fa-solid fa-pause"></i>')
+                start_stop = 'stop'
+                
+                $('#circle_before').css('animation-play-state','running')
+                $('#circle_after').css('animation-play-state','running')
+               
+            }
+        })
+
+    // ----------カウントダウン/レコード保存機能--------------------//
+    
+    // ---------テーブル表示機能--------------------//
+        onChildAdded(dbRef, function(data){
+            const records = data.val();
+            const key = data.key;
+
+            const now = new Date();
+            let today = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`
+
+            if(records.date == today){
+
+                let tr = `<tr>
+                            <td>${records.date}</td> 
+                            <td>${records.startTime}</td>
+                            <td>${records.endTime}</td>
+                            <td>${records.Title}</td>
+                            <td><i class="fa-solid fa-pen change"></i>・<i class="fa-regular fa-trash-can delete"></i></td>
+                            <td style ="display: none;">${key}</td>
+                
+                    
+                        </tr>`
+                
+                $('#list').append(tr)
+
+            }
+
+        })
+    // ---------テーブル表示機能--------------------//
+
+    // ---------削除機能--------------------//
+        $(document).on('click','.delete', function(){
+
+        let deletekey = $(this).parents('tr').children('td')[5].innerText;
+        let deleteRef = child(dbRef, deletekey)
+
+        remove(deleteRef)
+
+        $(this).parents('tr').remove();
+
+        })
+    // ---------削除機能--------------------//
+    // ---------編集機能--------------------//
+        $(document).on('click','.change', function(){
+
+            let setTitle = $(this).parents('tr').children('td')[3].innerText;
+            $(this).parents('tr').children('td')[3].innerHTML = `<input type="text" value=${setTitle}>`;
+            $(this).parents('tr').children('td')[4].innerHTML = '<i class="fa-solid fa-check changesave"></i>・<i class="fa-regular fa-trash-can delete"></i>';
+        })
+
+        $(document).on('click','.changesave', function(){
+
+            let changeTitle = $(this).parents('tr').find('input').val();
+            let changeKey = $(this).parents('tr').children('td')[5].innerText;
+            console.log(changeKey);
+
+            $(this).parents('tr').children('td')[3].innerHTML = changeTitle;
+            $(this).parents('tr').children('td')[4].innerHTML = '<i class="fa-solid fa-pen change"></i>・<i class="fa-regular fa-trash-can delete"></i>';
+            
+            const changeRecord = {
+                Title : changeTitle,
+            }
+
+            const updateRef = child(dbRef, changeKey);
+
+            update(updateRef, changeRecord);
+        
+        
+        })
+
+
+    // ---------編集機能--------------------//
+
+    </script>
+
+
+
+
+</body>
+</html>

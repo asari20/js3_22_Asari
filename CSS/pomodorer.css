@@ -1,0 +1,262 @@
+@charset "utf-8";
+
+html{
+  font-size: 62.5%;
+}
+
+body {
+  color: #212121;
+  font-family:"Open Sans",'ヒラギノ角ゴ ProN W3', Hiragino Kaku Gothic ProN, "メイリオ", Meiryo, sans-serif;
+  font-size: 1.6rem;
+}
+
+header{
+    position: fixed;
+    width: 100%;
+    height: 60px;
+    top: 0;
+    left: 0;
+    border-bottom: 1px solid #212121;
+
+}
+
+.header_wrapper{
+    display: flex;
+    width: 640px;
+    margin: 0 auto;
+    justify-content: space-between;
+    align-items: center;
+}
+.head_title{
+    font-size: 3.2rem;
+    font-weight: bold;
+    line-height: 60px;
+}
+.menu{
+    font-size: 3.2rem;
+    font-weight: bold;
+    line-height: 60px;
+}
+
+
+.clock{
+margin: 80px auto 20px;
+}
+.circle{
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    margin: 0 auto;
+    z-index: 1;
+    overflow: hidden;
+    background: #333;
+}
+
+#circle_before{
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -150px;
+    width: 300px;
+    height: 300px;
+    background: #999;
+    transform-origin: right 150px;
+    z-index: 2;
+}
+.animation_left{
+    animation-name: rotate-circle-left;
+    animation-delay: 1s;
+    animation-duration: 1500s;
+    animation-timing-function: linear;
+    animation-fill-mode: backwards;
+    animation-play-state: paused;
+
+}
+
+#circle_after{
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 150px;
+    width: 300px;
+    height: 300px;
+    background: #999;
+    transform-origin: left 150px;
+    z-index: 3;
+   
+}
+.animation_right{
+    animation: rotate-circle-right;
+    animation-delay: 1s;
+    animation-duration: 1500s;
+    animation-timing-function: linear;
+    animation-fill-mode: backwards;
+    animation-play-state: paused;
+}
+
+@keyframes rotate-circle-right {
+    0%   {
+        transform: rotate(0deg);
+        background: #999;
+    }
+    50%  {
+        transform: rotate(180deg);
+        background: #999;
+    }
+    50.01% {
+        transform: rotate(360deg);
+        background: #333;
+    }
+    100% {
+        transform: rotate(360deg);
+        background:#333;
+    }
+}
+
+@keyframes rotate-circle-left {
+    0%   { transform: rotate(0deg); }
+    50%  { transform: rotate(0deg); }
+    100% { transform: rotate(180deg); }
+}
+
+
+.clock_area{
+    position: absolute;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    width: 285px;
+    height: 285px;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%,-50%,0);
+    z-index: 4;
+    background-color: #FFF;
+    border-radius: 50%;
+}
+
+.countdown{
+    display: block;
+    font-size: 4.2rem;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.clock_timer{
+    display: block;
+    font-size: 1.8rem;
+    text-align: center;
+    margin: 0 auto;
+    
+}
+
+.btn_area{
+  display: flex;
+  justify-content: center;
+  margin: 20px auto 0;
+}
+.btn{
+  text-align: center;
+  display: block;
+  line-height: 40px;
+  width: 120px;
+  margin: 0 10px;
+  background-color: #EF7B7B;
+  border: 1px solid #919190;
+  cursor: pointer;
+}
+.btn i{
+    font-size: 2.4rem;
+    vertical-align: middle;
+}
+.btn:hover{
+  background: #C4EADA;
+}
+
+.table_area{
+    max-height: 420px;
+    overflow-y: scroll;
+}
+
+
+.list {
+    margin: 20px auto;
+    border: 1px solid #919190;
+    width: 640px;
+    table-layout: fixed;
+}
+.sticky{
+    position: sticky;
+    top: 0;
+}
+
+th {
+    width: 80px;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    background-color: #c4eada;
+    border: 1px solid #919190;
+}
+.date{
+    width: 100px;
+}
+.tag{
+    width: 240px;
+}
+  
+  
+td {
+    width: auto;
+    font-size: 1.6rem;
+    text-align: center;
+    background-color: #fcf3ca79;
+    border: 1px solid #919190;
+    line-height: 1.5;
+}
+  
+input{
+    font-size: 1.6rem;
+    box-sizing: border-box;
+    margin: 0 5px;
+    appearance: none;
+    width: 90%;
+    border: none;
+    text-align: center;
+    background-color: #FFF;
+}
+  
+.change{
+    cursor: pointer;
+}
+.change:hover{
+   text-decoration: underline;
+   background:#ef7b7bb9;
+}
+  
+.changesave{
+    cursor: pointer;
+}
+.changesave:hover{
+    text-decoration: underline;
+    background:#ef7b7bb9;
+}
+    
+.delete{
+    cursor: pointer;
+}
+.delete:hover{
+   text-decoration: underline;
+    background:#ef7b7bb9;
+}
+
+
+footer{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    background-color: #919190;
+}
